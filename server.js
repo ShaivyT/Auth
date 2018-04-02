@@ -2,75 +2,71 @@ var http = require('http');
 var express = require('express');
 var api = require('instagram-node').instagram();
 var app = express();
-
-
-// 1. Direct the user to the authorization URL
-/*
-app.get('/', function(req, res) {
-	res.redirect('https://api.instagram.com/oauth/authorize/?client_id=49a4ad3a068146e5948e1bd499eb4d8f&redirect_uri=http://localhost:9000/handleAuth&response_type=code');
-});
-
-
-//client_id: '49a4ad3a068146e5948e1bd499eb4d8f',
-//	client_secret: 'a777fe9ac28a493bbffc9f266a04bf91'
-
-
-// 2. Set the application scope for asking user access
-
-
-exports.authorize_user = function(req, res) {
-	res.redirect(api.get_authorization_url(redirect_uri, { scope : ['basic', 'likes']}));
-};
-
-
-var redirect_uri = 'http://localhost:9000/handleAuth';
-/* 
-exports.authorize_user = function(req, res) {
-  res.redirect(api.get_authorization_url(redirect_uri));
-};
-*/
-
-//app.listen(9400);
+var redirect_uri = 'http://localhost:9000/handleauth';
+var querystring = require('querystring');
+var postcode = require('postcode');
 
 api.use({
 	client_id: '49a4ad3a068146e5948e1bd499eb4d8f',
 	client_secret: 'a777fe9ac28a493bbffc9f266a04bf91' 
 });
 
-var redirect_uri = 'http://localhost:9000/handleAuth';
 
-
-
-app.get('/', function(req,res){
+app.get('/authorize_user', function(req,res){
 	res.redirect(api.get_authorization_url(redirect_uri, { scope: ['basic', 'likes']}));
 });
 
 
-app.get('/handleAuth', function(req, res) {
-	 console.log('handleAuth');
+app.get('/handleauth', function(req, res) {
+	 
+	 
+	 console.log('handleauth');
 	// if a user authorizes the application
 	// then collect the code
-	if (req == redirect_uri){
-
-		var code = req.query.code;
-
+	if (req.query.error) {
+		var error = req.query.error;
 	} else {
-
-		res.send('Error!');
+		var code = req.query.code;
 	}
-	//console.log(code);
-
-	//console.log(req);
-	//console.log(res);
+	
 });
+
 /*
-app.get('/handleAuth', function(){
+function postCode(code, res){
+
+	console.log('Hello');
+
+    var postData = querystring.stringify({
+    	'client_id' : '49a4ad3a068146e5948e1bd499eb4d8f',
+    	'client_secret' : 'a777fe9ac28a493bbffc9f266a04bf91',
+    	'grant_type' : 'authorization_code',
+    	'redirect_uri' : 'http://localhost:9000/handleAuth',
+    	'code' : code
+    });
+};
+
+var getAccessToken = postCode {
+
+    res.redirect('http://localhost:9000/about_page')
+
+};
+
+
+/*
+app.post('https://api.instagram.com/oauth/access_token', function(req,res) {
+
+	if (err) {
+		console.log("Error!");
+		res.send("Did not work");
+	} else {
+		console.log('Yippee! Access token is' + result.access_token);
+		res.send("It worked");
+	}
 
 });
-*/
 
-// Where should I post client id and client secret?
 
+/*
 app.post('/', function(code, redirect_uri, function(err, result) {
 
 	if (err) {
@@ -82,5 +78,7 @@ app.post('/', function(code, redirect_uri, function(err, result) {
 	}
 
 });
+
+*/
 
 app.listen(9000);
